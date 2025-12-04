@@ -34,13 +34,13 @@ storage:
   # If null, temporary snapshots are stored in: storage/snapshots_temp/
   temp_path: null
 
-  # If true - point payloads will not be stored in memory.
+   # If true - point payloads will not be stored in memory.
   # It will be read from the disk every time it is requested.
   # This setting saves RAM by (slightly) increasing the response time.
   # Note: those payload values that are involved in filtering and are indexed - remain in RAM.
   #
   # Default: true
-  on_disk_payload: true
+  on_disk_payload: false
 
   # Maximum number of concurrent updates to shard replicas
   # If `null` - maximum concurrency is used.
@@ -75,6 +75,15 @@ storage:
     # If positive - use this exact number of CPUs.
     optimizer_cpu_budget: 0
 
+    # Limit for number of concurrent search requests handled by a single shard
+    max_search_requests: 200
+
+    # Max number of threads (jobs) for running optimizations per shard.
+    # Note: each optimization job will also use `max_indexing_threads` threads by itself for index building.
+    # If null - have no limit and choose dynamically to saturate CPU.
+    # If 0 - no optimization threads, optimizations will be disabled.
+    max_optimization_threads: 4
+
     # Prevent DDoS of too many concurrent updates in distributed mode.
     # One external update usually triggers multiple internal updates, which breaks internal
     # timings. For example, the health check timing and consensus timing.
@@ -100,10 +109,10 @@ storage:
 
   optimizers:
     # The minimal fraction of deleted vectors in a segment, required to perform segment optimization
-    deleted_threshold: 0.23
+    deleted_threshold: 0.1
 
     # The minimal number of vectors in a segment, required to perform segment optimization
-    vacuum_min_vector_number: 750
+    vacuum_min_vector_number: 100
 
     # Target amount of segments optimizer will try to keep.
     # Real amount of segments may vary depending on multiple parameters:
@@ -125,15 +134,18 @@ storage:
     # If not set, will be automatically selected considering the number of available CPUs.
     max_segment_size_kb: null
 
+    # The number of points at which indexing is automatically triggered
+    # indexing_threshold_dubl: 3 # Сообщает, что дубль есть
+
     # Maximum size (in KiloBytes) of vectors allowed for plain index.
     # Default value based on experiments and observations.
     # Note: 1Kb = 1 vector of size 256
     # To explicitly disable vector indexing, set to `0`.
     # If not set, the default value will be used.
-    # indexing_threshold_kb: 10000
+    full_scan_threshold_kb: 10
 
     # Interval between forced flushes.
-    flush_interval_sec: 4
+    flush_interval_sec: 5
 
     # Max number of threads (jobs) for running optimizations per shard.
     # Note: each optimization job will also use `max_indexing_threads` threads by itself for index building.
@@ -143,7 +155,7 @@ storage:
 
   # This section has the same options as 'optimizers' above. All values specified here will overwrite the collections
   # optimizers configs regardless of the config above and the options specified at collection creation.
-  # optimizers_overwrite:
+  optimizers_overwrite:
     # deleted_threshold: 0.4
     # vacuum_min_vector_number: 900
     # default_segment_number: 0
@@ -166,7 +178,7 @@ storage:
     # `full_scan_threshold_kb`, the query planner will use full-scan search instead of HNSW index
     # traversal for better performance.
     # Note: 1Kb = 1 vector of size 256
-    full_scan_threshold_kb: 10000
+    full_scan_threshold_kb: 10
 
     # Number of parallel threads used for background index building.
     # If 0 - automatically select.
@@ -197,7 +209,7 @@ storage:
     # Default parameters for vectors.
     vectors:
       # Whether vectors should be stored in memory or on disk.
-      on_disk: null
+      on_disk: false
 
     # shard_number_per_node: 1
 
@@ -206,9 +218,9 @@ storage:
     quantization: null
 
     # Default strict mode parameters for newly created collections.
-    #strict_mode:
+    strict_mode:
       # Whether strict mode is enabled for a collection or not.
-      #enabled: false
+      enabled: false
 
       # Max allowed `limit` parameter for all APIs that don't have their own max limit.
       #max_query_limit: null
@@ -332,6 +344,3 @@ cluster:
     # replaying a huge amount of operations.
     # If 0 - disable compaction
     compact_wal_entries: 128
-
-
-
