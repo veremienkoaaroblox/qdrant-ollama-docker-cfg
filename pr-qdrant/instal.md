@@ -1,4 +1,5 @@
 docker-compose down
+docker volume ls
 docker volume rm qdrant_storage
 docker pull qdrant/qdrant:latest
 docker-compose up -d

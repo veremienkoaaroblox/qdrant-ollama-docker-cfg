@@ -61,6 +61,10 @@ storage:
   # Useful for setting up a dedicated backup node
   # node_type: "Listener"
 
+  # Настройки кэша
+  # cache:
+    # cache_size_mb: 1024
+
   performance:
     # Number of parallel threads used for search operations. If 0 - auto selection.
     max_search_threads: 0
@@ -96,10 +100,10 @@ storage:
 
   optimizers:
     # The minimal fraction of deleted vectors in a segment, required to perform segment optimization
-    deleted_threshold: 0.3
+    deleted_threshold: 0.23
 
     # The minimal number of vectors in a segment, required to perform segment optimization
-    vacuum_min_vector_number: 1000
+    vacuum_min_vector_number: 750
 
     # Target amount of segments optimizer will try to keep.
     # Real amount of segments may vary depending on multiple parameters:
@@ -126,10 +130,10 @@ storage:
     # Note: 1Kb = 1 vector of size 256
     # To explicitly disable vector indexing, set to `0`.
     # If not set, the default value will be used.
-    indexing_threshold_kb: 10000
+    # indexing_threshold_kb: 10000
 
     # Interval between forced flushes.
-    flush_interval_sec: 5
+    flush_interval_sec: 4
 
     # Max number of threads (jobs) for running optimizations per shard.
     # Note: each optimization job will also use `max_indexing_threads` threads by itself for index building.
@@ -139,14 +143,14 @@ storage:
 
   # This section has the same options as 'optimizers' above. All values specified here will overwrite the collections
   # optimizers configs regardless of the config above and the options specified at collection creation.
-  optimizers_overwrite:
-    deleted_threshold: 0.4
-    vacuum_min_vector_number: 900
-  #  default_segment_number: 0
-  #  max_segment_size_kb: null
-  #  indexing_threshold_kb: 10000
-    flush_interval_sec: 6
-  #  max_optimization_threads: null
+  # optimizers_overwrite:
+    # deleted_threshold: 0.4
+    # vacuum_min_vector_number: 900
+    # default_segment_number: 0
+    # max_segment_size_kb: null
+    # indexing_threshold_kb: 10000
+    # flush_interval_sec: 6
+    # max_optimization_threads: null
 
   # Default parameters of HNSW Index. Could be overridden for each collection or named vector individually
   hnsw_index:
@@ -329,6 +333,5 @@ cluster:
     # If 0 - disable compaction
     compact_wal_entries: 128
 
-# Set to true to prevent service from sending usage statistics to the developers.
-# Read more: https://qdrant.tech/documentation/guides/telemetry
-telemetry_disabled: false
+
+

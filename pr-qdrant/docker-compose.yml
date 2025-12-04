@@ -7,31 +7,23 @@ services:
       - "6333:6333"  # HTTP API
       - "6334:6334"  # gRPC API
     volumes:
+      # Используем bind mount для удобного доступа к данным
       - ./qdrant_storage:/qdrant/storage
+      # Монтируем наши файлы конфигурации
       - ./config.yaml:/qdrant/config/production.yaml
       - ./storage.yaml:/qdrant/config/storage.yaml
+    # Указываем путь к главному конфигу
+    command: ./qdrant --config-path /qdrant/config/production.yaml
+
     environment:
+      # Эти переменные переопределят/дополнят настройки из YAML-файлов
       - QDRANT__SERVICE__HTTP_PORT=6333
       - QDRANT__SERVICE__GRPC_PORT=6334
       - QDRANT__SERVICE__ENABLE_CORS=true
+      # Путь к данным и снэпшотам задается здесь, это надежный способ
       - QDRANT__STORAGE__STORAGE_PATH=/qdrant/storage
       - QDRANT__STORAGE__SNAPSHOTS_PATH=/qdrant/snapshots
-      - QDRANT__STORAGE__ON_DISK_PAYLOAD=true
-      - QDRANT__STORAGE__PERFORMANCE__MAX_SEARCH_THREADS=0
-      - QDRANT__STORAGE__PERFORMANCE__OPTIMIZER_CPU_BUDGET=0
-      - QDRANT__STORAGE__PERFORMANCE__MAX_SEARCH_REQUESTS=200
-      - QDRANT__STORAGE__PERFORMANCE__MAX_OPTIMIZATION_THREADS=4
-      - QDRANT__STORAGE__OPTIMIZERS__DELETED_THRESHOLD=0.3
-      - QDRANT__STORAGE__OPTIMIZERS__VACUUM_MIN_VECTOR_NUMBER=700
-      - QDRANT__STORAGE__OPTIMIZERS__FLUSH_INTERVAL_SEC=5
-      - QDRANT__STORAGE__HNSW_INDEX__M=16
-      - QDRANT__STORAGE__HNSW_INDEX__EF_CONSTRUCT=100
-      - QDRANT__STORAGE__HNSW_INDEX__FULL_SCAN_THRESHOLD_KB=10000
-      - QDRANT__STORAGE__HNSW_INDEX__MAX_INDEXING_THREADS=0
-      - QDRANT__STORAGE__OPTIMIZERS__INDEXING_THRESHOLD: "1"      # индекс сразу после 1 точки
-      - QDRANT__CLUSTER__ENABLED=false
       - QDRANT__TELEMETRY_DISABLED=true
-    command: ./qdrant --config-path /qdrant/config/production.yaml
 
 volumes:
   qdrant_storage:
