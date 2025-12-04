@@ -1,0 +1,3 @@
+- **Внешний Qdrant (AWS)**:
+  - `uri`: https://68880f2e-13ca-4846-bee8-c3b7c3591395.us-west-2-0.aws.cloud.qdrant.io:6333
+  - `api_key`: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3MiOiJtIn0.AovuK7vvOUkKHPTpJHU9Iy5F0zAs3k6-zF1cDJ-hfxY
